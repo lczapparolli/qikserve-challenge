@@ -1,5 +1,6 @@
 package br.zapparolli.model;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigInteger;
@@ -10,6 +11,7 @@ import java.math.BigInteger;
  * @author lczapparolli
  */
 @Data
+@Builder
 public class Product {
 
     /**
