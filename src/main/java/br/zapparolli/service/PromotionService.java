@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.math.BigInteger;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Service for managing promotions
@@ -44,6 +45,17 @@ public class PromotionService {
     }
 
     /**
+     * Find the promotion that is applyable to the given product and amount
+     *
+     * @param productId The product identification
+     * @param amount The amount of the purchase
+     * @return Returns the promotion or an empty {@link Optional}
+     */
+    public Optional<Promotion> getPromotion(String productId, BigInteger amount) {
+        return promotionRepository.findByProductAmount(productId, amount);
+    }
+
+    /**
      * Validate the promotion data
      *
      * @param newPromotion The promotion to be validated
@@ -72,5 +84,4 @@ public class PromotionService {
             throw new QikServeException(ErrorMessage.ERROR_PROMOTION_ALREADY_EXISTS);
         }
     }
-
 }
