@@ -55,6 +55,21 @@ public class PromotionService {
     }
 
     /**
+     * Creates an example promotion for all products in the API
+     */
+    public void createExamplePromotions() {
+        var products = productService.getProducts();
+
+        for (var product : products) {
+            createPromotion(NewPromotion.builder()
+                    .productId(product.getId())
+                    .minAmount(BigInteger.valueOf(5))
+                    .unitDiscount(product.getPrice().divide(BigInteger.TWO))
+                    .build());
+        }
+    }
+
+    /**
      * Find the promotion that is applyable to the given product and amount
      *
      * @param productId The product identification

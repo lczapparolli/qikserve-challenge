@@ -9,7 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Rest client for products API
@@ -28,7 +28,7 @@ public interface ProductsRestClient {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    Collection<Product> listProducts();
+    List<Product> listProducts();
 
     /**
      * Return the data of a single product

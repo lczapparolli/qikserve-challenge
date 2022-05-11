@@ -60,6 +60,15 @@ public class PromotionResource {
     }
 
     /**
+     * Creates an example promotion for all products
+     */
+    @POST
+    @Path("/example")
+    public void createExamplePromotions() {
+        promotionService.createExamplePromotions();
+    }
+
+    /**
      * Converts the entity to the model
      *
      * @param promotion Entity to be converted

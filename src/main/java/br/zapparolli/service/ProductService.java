@@ -10,6 +10,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 /**
  * Service for getting product data
@@ -46,6 +47,15 @@ public class ProductService {
         } catch (Exception exception) {
             throw new QikServeException(ErrorMessage.ERROR_PRODUCT_API);
         }
+    }
+
+    /**
+     * Get all products in the API
+     *
+     * @return Returns the list of products
+     */
+    public List<Product> getProducts() {
+        return productsRestClient.listProducts();
     }
 
 }
