@@ -19,6 +19,7 @@ import java.math.BigInteger;
 import static br.zapparolli.mock.ProductRestClientMockUtil.PRODUCT_1;
 import static br.zapparolli.mock.ProductRestClientMockUtil.PRODUCT_2;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -205,6 +206,32 @@ public class BasketServiceTest {
                 .build();
         // Checks if the service throws the excepted exception
         assertThrows(ErrorMessage.ERROR_INVALID_CUSTOMER_ID, () -> basketService.addItem(emptyCustomerItem));
+    }
+
+    /**
+     * Check the checkout process
+     */
+    @Test
+    public void checkoutTest() {
+        // Creates a new basket
+        basketService.addItem(NewBasketItem.builder()
+                .customerId("CHECKOUT_BASKET")
+                .productId(PRODUCT_1.getId())
+                .amount(BigInteger.ONE)
+                .build());
+
+        // Closes the basket
+        var closedBasket = basketService.checkout("CHECKOUT_BASKET");
+        assertNotNull(closedBasket);
+        assertFalse(closedBasket.isOpen());
+    }
+
+    /**
+     * Check the result if there is no open basket for the given customer
+     */
+    @Test
+    public void checkoutNoOpenBasketTest() {
+        assertThrows(ErrorMessage.ERROR_NO_OPEN_BASKET, () -> basketService.checkout("NO_OPEN_BASKET"));
     }
 
     /**

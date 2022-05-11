@@ -65,6 +65,26 @@ public class BasketService {
     }
 
     /**
+     * Close the currently open basket of the giving customer
+     *
+     * @param customerId The identification of the customer
+     * @throws BasketException Throws an exception if the customer does not have an open basket
+     * @return Returns de closed basket
+     */
+    public Basket checkout(String customerId) {
+        // Searches for the current open basket of the customer
+        var basket = basketRepository.findOpenBasket(customerId)
+                // If no basket is found, throws an exception
+                .orElseThrow(() -> new BasketException(ErrorMessage.ERROR_NO_OPEN_BASKET));
+
+        // Closes de basket
+        basket.setOpen(false);
+        basketRepository.persist(basket);
+
+        return basket;
+    }
+
+    /**
      * Validate the item data
      *
      * @param newBasketItem The item to be validated
