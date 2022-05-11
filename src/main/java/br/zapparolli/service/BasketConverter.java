@@ -2,12 +2,14 @@ package br.zapparolli.service;
 
 import br.zapparolli.entity.Basket;
 import br.zapparolli.entity.BasketItem;
+import br.zapparolli.entity.Promotion;
 import br.zapparolli.model.InsertedBasket;
 import br.zapparolli.model.InsertedBasketItem;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.math.BigInteger;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -34,7 +36,17 @@ public class BasketConverter {
                 .items(basket.getItems().stream().map(this::convertBasketItem).collect(Collectors.toList()))
                 .build();
 
-        // Calculates the total of the items
+        // Calculates the raw value of the basket
+        insertedBasket.setRawValue(insertedBasket.getItems().stream()
+                .map(InsertedBasketItem::getRawValue)
+                .reduce(BigInteger.ZERO, BigInteger::add));
+
+        // Calculates the discount value of the basket
+        insertedBasket.setDiscount(insertedBasket.getItems().stream()
+                .map(InsertedBasketItem::getDiscount)
+                .reduce(BigInteger.ZERO, BigInteger::add));
+
+        // Calculates the total value of the basket
         insertedBasket.setTotal(insertedBasket.getItems().stream()
                 .map(InsertedBasketItem::getItemTotal)
                 .reduce(BigInteger.ZERO, BigInteger::add));
@@ -51,6 +63,11 @@ public class BasketConverter {
     private InsertedBasketItem convertBasketItem(BasketItem basketItem) {
         // Get the product data
         var product = productService.findProduct(basketItem.getProductId());
+        var rawValue = basketItem.getAmount().multiply(basketItem.getUnitPrice());
+        var discount = Optional.ofNullable(basketItem.getPromotion())
+                .map(Promotion::getUnitDiscount)
+                .orElse(BigInteger.ZERO)
+                .multiply(basketItem.getAmount());
 
         // Converts the basket item
         return InsertedBasketItem.builder()
@@ -58,7 +75,9 @@ public class BasketConverter {
                 .productName(product.getName())
                 .amount(basketItem.getAmount())
                 .unitPrice(basketItem.getUnitPrice())
-                .itemTotal(basketItem.getAmount().multiply(basketItem.getUnitPrice()))
+                .rawValue(rawValue)
+                .discount(discount)
+                .itemTotal(rawValue.subtract(discount))
                 .build();
     }
 }

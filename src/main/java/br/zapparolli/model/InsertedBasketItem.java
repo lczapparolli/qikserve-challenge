@@ -35,6 +35,16 @@ public class InsertedBasketItem {
     private BigInteger amount;
 
     /**
+     * The price of the item, without discount
+     */
+    private BigInteger rawValue;
+
+    /**
+     * The discount received by a promotion
+     */
+    private BigInteger discount;
+
+    /**
      * The total price of the item
      */
     private BigInteger itemTotal;

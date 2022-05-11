@@ -63,11 +63,15 @@ public class BasketResourceTest {
                 .statusCode(200)
                 .body("customerId", is(newBasketItem.getCustomerId()))
                 .body("total", is(PRODUCT_1.getPrice()))
+                .body("rawValue", is(PRODUCT_1.getPrice()))
+                .body("discount", is(BigInteger.ZERO))
                 .body("items[0].productId", is(PRODUCT_1.getId()))
                 .body("items[0].productName", is(PRODUCT_1.getName()))
                 .body("items[0].unitPrice", is(PRODUCT_1.getPrice()))
                 .body("items[0].amount", is(newBasketItem.getAmount()))
-                .body("items[0].itemTotal", is(PRODUCT_1.getPrice()));
+                .body("items[0].itemTotal", is(PRODUCT_1.getPrice()))
+                .body("items[0].rawValue", is(PRODUCT_1.getPrice()))
+                .body("items[0].discount", is(BigInteger.ZERO));
     }
 
     /**
@@ -114,11 +118,15 @@ public class BasketResourceTest {
                 .statusCode(200)
                 .body("customerId", is(newBasketItem.getCustomerId()))
                 .body("total", is(PRODUCT_1.getPrice()))
+                .body("rawValue", is(PRODUCT_1.getPrice()))
+                .body("discount", is(BigInteger.ZERO))
                 .body("items[0].productId", is(PRODUCT_1.getId()))
                 .body("items[0].productName", is(PRODUCT_1.getName()))
                 .body("items[0].unitPrice", is(PRODUCT_1.getPrice()))
                 .body("items[0].amount", is(newBasketItem.getAmount()))
-                .body("items[0].itemTotal", is(PRODUCT_1.getPrice()));
+                .body("items[0].itemTotal", is(PRODUCT_1.getPrice()))
+                .body("items[0].rawValue", is(PRODUCT_1.getPrice()))
+                .body("items[0].discount", is(BigInteger.ZERO));
     }
 
 

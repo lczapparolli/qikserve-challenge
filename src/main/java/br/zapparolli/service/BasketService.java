@@ -80,6 +80,24 @@ public class BasketService {
     }
 
     /**
+     * Validate the item data
+     *
+     * @param newBasketItem The item to be validated
+     * @throws QikServeException Throws an exception if any field is invalid
+     */
+    private void validateNewItem(NewBasketItem newBasketItem) {
+        // Validates the customer identification
+        if (Objects.isNull(newBasketItem.getCustomerId()) || newBasketItem.getCustomerId().isBlank()) {
+            throw new QikServeException(ErrorMessage.ERROR_INVALID_CUSTOMER_ID);
+        }
+
+        // Validates the amount
+        if (Objects.isNull(newBasketItem.getAmount()) || newBasketItem.getAmount().compareTo(BigInteger.ONE) < 0) {
+            throw new QikServeException(ErrorMessage.ERROR_INVALID_AMOUNT);
+        }
+    }
+
+    /**
      * Close the currently open basket of the giving customer
      *
      * @param customerId The identification of the customer
@@ -97,24 +115,6 @@ public class BasketService {
         basketRepository.persist(basket);
 
         return basket;
-    }
-
-    /**
-     * Validate the item data
-     *
-     * @param newBasketItem The item to be validated
-     * @throws QikServeException Throws an exception if any field is invalid
-     */
-    private void validateNewItem(NewBasketItem newBasketItem) {
-        // Validates the customer identification
-        if (Objects.isNull(newBasketItem.getCustomerId()) || newBasketItem.getCustomerId().isBlank()) {
-            throw new QikServeException(ErrorMessage.ERROR_INVALID_CUSTOMER_ID);
-        }
-
-        // Validates the amount
-        if (Objects.isNull(newBasketItem.getAmount()) || newBasketItem.getAmount().compareTo(BigInteger.ONE) < 0) {
-            throw new QikServeException(ErrorMessage.ERROR_INVALID_AMOUNT);
-        }
     }
 
 }
