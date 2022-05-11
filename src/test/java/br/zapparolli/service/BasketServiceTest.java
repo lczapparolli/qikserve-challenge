@@ -1,10 +1,13 @@
 package br.zapparolli.service;
 
+import br.zapparolli.entity.Promotion;
 import br.zapparolli.exception.ErrorMessage;
 import br.zapparolli.mock.ProductRestClientMockUtil;
 import br.zapparolli.model.NewBasketItem;
 import br.zapparolli.repository.BasketRepository;
+import br.zapparolli.repository.PromotionRepository;
 import br.zapparolli.resource.client.ProductsRestClient;
+import br.zapparolli.utils.DatabaseUtils;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -12,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import java.math.BigInteger;
 
 import static br.zapparolli.mock.ProductRestClientMockUtil.PRODUCT_1;
@@ -20,6 +24,7 @@ import static br.zapparolli.utils.AssertionUtils.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -32,13 +37,17 @@ public class BasketServiceTest {
 
     @Inject BasketService basketService;
     @Inject BasketRepository basketRepository;
+    @Inject PromotionRepository promotionRepository;
+    @Inject DatabaseUtils databaseUtils;
 
     @InjectMock
     @RestClient
     ProductsRestClient productsRestClient;
 
     @BeforeEach
+    @Transactional
     public void setup() {
+        databaseUtils.clearDB();
         ProductRestClientMockUtil.configMock(productsRestClient);
     }
 
@@ -204,6 +213,39 @@ public class BasketServiceTest {
                 .build();
         // Checks if the service throws the excepted exception
         assertThrows(ErrorMessage.ERROR_INVALID_CUSTOMER_ID, () -> basketService.addItem(emptyCustomerItem));
+    }
+
+    /**
+     * Check if the promotion is applied to the item
+     */
+    @Test
+    @Transactional
+    public void addItemCheckPromotionTest() {
+        // Creates a promotion
+        var promotion = Promotion.builder()
+                .productId(PRODUCT_1.getId())
+                .minAmount(BigInteger.TWO)
+                .unitDiscount(BigInteger.ONE)
+                .build();
+        promotionRepository.persist(promotion);
+
+        var newBasketItem = NewBasketItem.builder()
+                .productId(PRODUCT_1.getId())
+                .amount(BigInteger.ONE)
+                .customerId("PROMOTION_TEST")
+                .build();
+
+        // Inserts an item
+        var basket = basketService.addItem(newBasketItem);
+        // Checks if the promotion is no applied
+        assertNull(basket.getItems().get(0).getPromotion());
+
+        // Increments the item
+        basket = basketService.addItem(newBasketItem);
+        // Checks if the promotion is now applied
+        assertNotNull(basket.getItems().get(0).getPromotion());
+        assertEquals(promotion, basket.getItems().get(0).getPromotion());
+
     }
 
     /**

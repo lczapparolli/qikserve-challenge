@@ -27,6 +27,9 @@ public class BasketService {
     @Inject
     ProductService productService;
 
+    @Inject
+    PromotionService promotionService;
+
     /**
      * Add a new item to a basket, creating it if not exists
      *
@@ -52,11 +55,28 @@ public class BasketService {
 
         // Increments the amount of the item
         existentItem.setAmount(existentItem.getAmount().add(newBasketItem.getAmount()));
+        checkPromotion(existentItem);
 
         // Saves the basket and the itens
         basketRepository.persist(basket);
 
         return basket;
+    }
+
+    /**
+     * Check if there is any promotion avaliable for the given item
+     *
+     * @param basketItem The item of the basket to be analysed
+     */
+    private void checkPromotion(BasketItem basketItem) {
+        // Returns if there is already a promotion
+        if (!Objects.isNull(basketItem.getPromotion())) {
+            return;
+        }
+
+        // Finds the promotion and sets in the item
+        var promotion = promotionService.getPromotion(basketItem.getProductId(), basketItem.getAmount());
+        promotion.ifPresent(basketItem::setPromotion);
     }
 
     /**
