@@ -10,6 +10,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -42,6 +43,15 @@ public class PromotionService {
         promotionRepository.persist(promotion);
 
         return promotion;
+    }
+
+    /**
+     * Get all promotions
+     *
+     * @return Returns the list of promotions
+     */
+    public List<Promotion> getAllPromotions() {
+        return promotionRepository.listAll();
     }
 
     /**

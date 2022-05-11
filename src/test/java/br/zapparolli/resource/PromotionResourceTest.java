@@ -4,6 +4,7 @@ import br.zapparolli.exception.ErrorMessage;
 import br.zapparolli.mock.ProductRestClientMockUtil;
 import br.zapparolli.model.NewPromotion;
 import br.zapparolli.resource.client.ProductsRestClient;
+import br.zapparolli.service.PromotionService;
 import br.zapparolli.utils.DatabaseUtils;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
@@ -18,8 +19,10 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.core.MediaType;
 import java.math.BigInteger;
+import java.util.List;
 
 import static br.zapparolli.mock.ProductRestClientMockUtil.PRODUCT_1;
+import static br.zapparolli.mock.ProductRestClientMockUtil.PRODUCT_2;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -31,6 +34,9 @@ import static org.hamcrest.CoreMatchers.notNullValue;
  */
 @QuarkusTest
 public class PromotionResourceTest {
+
+    @Inject
+    PromotionService promotionService;
 
     @Inject
     DatabaseUtils databaseUtils;
@@ -90,6 +96,41 @@ public class PromotionResourceTest {
             .then()
                 .statusCode(400)
                 .body("message", is(ErrorMessage.ERROR_PROMOTION_INVALID_AMOUNT.getMessage()));
+    }
+
+    /**
+     * Check the listing of promotions
+     */
+    @Test
+    public void listPromotionsTest() {
+        // Inserts the promotions
+        var promotion1 = NewPromotion.builder()
+                .productId(PRODUCT_1.getId())
+                .minAmount(BigInteger.TEN)
+                .unitDiscount(BigInteger.ONE)
+                .build();
+        promotionService.createPromotion(promotion1);
+
+        var promotion2 = NewPromotion.builder()
+                .productId(PRODUCT_2.getId())
+                .minAmount(BigInteger.TEN)
+                .unitDiscount(BigInteger.ONE)
+                .build();
+        promotionService.createPromotion(promotion2);
+
+        given()
+            .when()
+                .config(RestAssuredConfig.newConfig().jsonConfig(JsonConfig.jsonConfig().numberReturnType(JsonPathConfig.NumberReturnType.BIG_INTEGER)))
+                .get("/promotion")
+            .then()
+                .body("[0].id", is(notNullValue()))
+                .body("[0].productId", is(promotion1.getProductId()))
+                .body("[0].minAmount", is(promotion1.getMinAmount()))
+                .body("[0].unitDiscount", is(promotion1.getUnitDiscount()))
+                .body("[1].id", is(notNullValue()))
+                .body("[1].productId", is(promotion2.getProductId()))
+                .body("[1].minAmount", is(promotion2.getMinAmount()))
+                .body("[1].unitDiscount", is(promotion2.getUnitDiscount()));
     }
 
 }
