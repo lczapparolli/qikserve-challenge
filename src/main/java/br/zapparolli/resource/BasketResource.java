@@ -7,6 +7,7 @@ import br.zapparolli.service.BasketService;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -55,6 +56,22 @@ public class BasketResource {
     public InsertedBasket checkout(@PathParam("customerId") String customerId) {
         // Closes the basket
         var basket = basketService.checkout(customerId);
+
+        // Converts the entity
+        return basketConverter.convertBasket(basket);
+    }
+
+    /**
+     * Gets the currently open basket for the given customerId
+     *
+     * @param customerId The customer identification
+     * @return Returns the basket found
+     */
+    @GET
+    @Path("/{customerId}")
+    public InsertedBasket getOpenBasket(@PathParam("customerId") String customerId) {
+        // Closes the basket
+        var basket = basketService.getOpenBasket(customerId);
 
         // Converts the entity
         return basketConverter.convertBasket(basket);

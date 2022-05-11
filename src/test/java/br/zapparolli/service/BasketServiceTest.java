@@ -274,4 +274,29 @@ public class BasketServiceTest {
         assertThrows(ErrorMessage.ERROR_NO_OPEN_BASKET, () -> basketService.checkout("NO_OPEN_BASKET"));
     }
 
+    /**
+     * Check the method to get the currently open basket
+     */
+    @Test
+    public void getOpenBasketTest() {
+        // Creates a new basket
+        var basket = basketService.addItem(NewBasketItem.builder()
+                .customerId("GET_BASKET")
+                .productId(PRODUCT_1.getId())
+                .amount(BigInteger.ONE)
+                .build());
+
+        // Checks if is the same inserted
+        var openBasket = basketService.getOpenBasket("GET_BASKET");
+        assertEquals(basket.getId(), openBasket.getId());
+    }
+
+    /**
+     * Check the result if there is no open basket for the given customer
+     */
+    @Test
+    public void getOpenBasketNoOpenBasketTest() {
+        assertThrows(ErrorMessage.ERROR_NO_OPEN_BASKET, () -> basketService.getOpenBasket("NO_OPEN_BASKET"));
+    }
+
 }

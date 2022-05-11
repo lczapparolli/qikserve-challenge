@@ -80,6 +80,18 @@ public class BasketService {
     }
 
     /**
+     * Get the current open basket for the given customer
+     *
+     * @param customerId The customer identification
+     * @throws QikServeException Throws an exception if there is no open basket
+     * @return Returns the found basket
+     */
+    public Basket getOpenBasket(String customerId) {
+        return basketRepository.findOpenBasket(customerId)
+                .orElseThrow(() -> new QikServeException(ErrorMessage.ERROR_NO_OPEN_BASKET));
+    }
+
+    /**
      * Validate the item data
      *
      * @param newBasketItem The item to be validated
