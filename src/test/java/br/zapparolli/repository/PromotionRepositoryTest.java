@@ -1,6 +1,7 @@
 package br.zapparolli.repository;
 
 import br.zapparolli.entity.Promotion;
+import br.zapparolli.utils.DatabaseUtils;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,10 +26,13 @@ public class PromotionRepositoryTest {
     @Inject
     PromotionRepository promotionRepository;
 
+    @Inject
+    DatabaseUtils databaseUtils;
+
     @BeforeEach
     @Transactional
     public void setup() {
-        promotionRepository.deleteAll();
+        databaseUtils.clearDB();
     }
 
     /**

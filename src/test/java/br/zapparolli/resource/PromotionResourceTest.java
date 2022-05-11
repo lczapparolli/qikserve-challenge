@@ -3,8 +3,8 @@ package br.zapparolli.resource;
 import br.zapparolli.exception.ErrorMessage;
 import br.zapparolli.mock.ProductRestClientMockUtil;
 import br.zapparolli.model.NewPromotion;
-import br.zapparolli.repository.PromotionRepository;
 import br.zapparolli.resource.client.ProductsRestClient;
+import br.zapparolli.utils.DatabaseUtils;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import io.restassured.config.JsonConfig;
@@ -33,7 +33,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 public class PromotionResourceTest {
 
     @Inject
-    PromotionRepository promotionRepository;
+    DatabaseUtils databaseUtils;
 
     @InjectMock
     @RestClient
@@ -42,7 +42,7 @@ public class PromotionResourceTest {
     @BeforeEach
     @Transactional
     public void setup() {
-        promotionRepository.deleteAll();
+        databaseUtils.clearDB();
         ProductRestClientMockUtil.configMock(productsRestClient);
     }
 

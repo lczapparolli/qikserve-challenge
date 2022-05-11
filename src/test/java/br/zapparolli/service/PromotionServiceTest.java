@@ -3,8 +3,8 @@ package br.zapparolli.service;
 import br.zapparolli.exception.ErrorMessage;
 import br.zapparolli.mock.ProductRestClientMockUtil;
 import br.zapparolli.model.NewPromotion;
-import br.zapparolli.repository.PromotionRepository;
 import br.zapparolli.resource.client.ProductsRestClient;
+import br.zapparolli.utils.DatabaseUtils;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-
 import java.math.BigInteger;
 
 import static br.zapparolli.mock.ProductRestClientMockUtil.PRODUCT_1;
@@ -34,7 +33,7 @@ public class PromotionServiceTest {
     PromotionService promotionService;
 
     @Inject
-    PromotionRepository promotionRepository;
+    DatabaseUtils databaseUtils;
 
     @InjectMock
     @RestClient
@@ -43,7 +42,7 @@ public class PromotionServiceTest {
     @BeforeEach
     @Transactional
     public void setup() {
-        promotionRepository.deleteAll();
+        databaseUtils.clearDB();
         ProductRestClientMockUtil.configMock(productsRestClient);
     }
 
@@ -147,7 +146,7 @@ public class PromotionServiceTest {
                 .build();
 
         // Creates the promotion
-        var promotion = promotionService.createPromotion(newPromotion);
+        promotionService.createPromotion(newPromotion);
 
         // Try to recreate it
         assertThrows(ErrorMessage.ERROR_PROMOTION_ALREADY_EXISTS, () -> promotionService.createPromotion(newPromotion));
