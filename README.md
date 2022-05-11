@@ -1,56 +1,109 @@
 # qikserve-challenge Project
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+- [About the project](#about-the-project)
+- [Running the project](#running-the-project)
+- [Follow-up questions](#follow-up-questions)
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+## About the project
 
-## Running the application in dev mode
+The project was build using Quarkus framework and an H2 _in memory_ database. I also used
+Hibernate and Panache, to simplify database tasks.
 
-You can run your application in dev mode that enables live coding using:
-```shell script
-./mvnw compile quarkus:dev
+The API has the following endpoints:
+
+### `POST /basket` - To add a new item to a basket
+
+The method receives an object with a customer ID, a product ID and the amount of itens.
+The system allows multiple customer to shop at the same time, but each custome is
+allowed to have just one open basket at time.
+
+When adding a product that is already in the basket, then the amount is increased by
+the given amount.
+
+Example of a request body:
+
+```json
+{
+  "productId": "PWWe3w1SDU",
+  "customerId": "CUSTOMER_ID",
+  "amount": 1
+}
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
+### `GET /basket/{customerId}` - To show the currently open basket of the user
 
-## Packaging and running the application
+This method returns the basket data of the open basket of the given customer.
+If there is no open basket, then an error with 404 status is returned.
 
-The application can be packaged using:
-```shell script
-./mvnw package
-```
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+### `POST /basket/{customerId}/checkout` - To close a basket
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+This method closes the current basket of the customer, preventing to add new items.
+If the `POST /basket` is called aftwards, then a new basket is created.
 
-If you want to build an _über-jar_, execute the following command:
-```shell script
-./mvnw package -Dquarkus.package.type=uber-jar
-```
+The method receives no body.
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+### `POST /promotion` - To create a new promotion
 
-## Creating a native executable
+The promotion is applied if the basket has equal or more unities of the product in the
+promotion. The discount in the promotion is apllied to each unity of the product in the
+basket.
 
-You can create a native executable using: 
-```shell script
-./mvnw package -Pnative
-```
+It's not possible to have more than one promotion to a single product.
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using: 
-```shell script
-./mvnw package -Pnative -Dquarkus.native.container-build=true
+Example of a request body:
+```json
+{
+    "productId": "Dwt5F7KAhi",
+    "minAmount": 5,
+    "unitDiscount": 549
+}
 ```
 
-You can then execute your native executable with: `./target/qikserve-challenge-1.0.0-SNAPSHOT-runner`
+### `GET /promotion` - To list all promotions
 
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.
+This method return the list of the promotions that has been inserted.
 
-## Provided Code
+### `POST /promotion/example` - To fill the database with a promotion for every product
 
-### RESTEasy Reactive
+This method allows to populate the promotion database with ease for testing purposes.
+The promotions are all inserted with `minAmount = 5` and discount equal to half the price
+of the product.
 
-Easily start your Reactive RESTful Web Services
+## Running the project
 
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+If maven is installed in the machine just run:
+```shell
+>mvn clean compile quarkus:dev
+```
+
+It's also possible to use the embed maven version by running:
+```shell
+>.\mvnw clean compile quarkus:dev
+```
+
+The Wiremock of the products API is not included in the project, but it's configurated
+to access the API at the port 8081, this can be changed in `src/main/resources/application.properties` file.
+
+## Follow-up questions
+
+1. How long did you spend on the test?
+
+    R: It took me two days to finish the test. Approximately 10 hours straight of work.
+
+2. What would you add if you had more time?
+
+    R: I would add a more sophisticated promotion system, with combo options, for example.
+
+3. How would you improve the product APIs that you had to consume?
+
+    R: I would add the capacity to filter products by its name.
+
+4. What did you find most difficult?
+
+    R: The most difficult part to me was to decide how to implement the promotions system.
+
+5. How did you find the overall experience, any feedback for us?
+
+    R: I liked the challenge, I felt that it was a good way to explore various skills,
+    but I think it would be nice to have more information on how about the promotions
+    should be defined and applied to the basket. I just assumed one way to make it. 
