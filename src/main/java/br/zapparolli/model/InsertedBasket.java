@@ -1,9 +1,7 @@
 package br.zapparolli.model;
 
-import br.zapparolli.entity.Basket;
 import lombok.Builder;
 import lombok.Data;
-import org.hibernate.sql.Insert;
 
 import java.math.BigInteger;
 import java.util.List;

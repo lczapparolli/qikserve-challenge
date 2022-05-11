@@ -3,6 +3,7 @@ package br.zapparolli.service;
 import br.zapparolli.exception.ErrorMessage;
 import br.zapparolli.mock.ProductRestClientMockUtil;
 import br.zapparolli.model.NewPromotion;
+import br.zapparolli.repository.PromotionRepository;
 import br.zapparolli.resource.client.ProductsRestClient;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import java.math.BigInteger;
 
@@ -31,12 +33,17 @@ public class PromotionServiceTest {
     @Inject
     PromotionService promotionService;
 
+    @Inject
+    PromotionRepository promotionRepository;
+
     @InjectMock
     @RestClient
     ProductsRestClient productsRestClient;
 
     @BeforeEach
+    @Transactional
     public void setup() {
+        promotionRepository.deleteAll();
         ProductRestClientMockUtil.configMock(productsRestClient);
     }
 
