@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.math.BigInteger;
 
@@ -62,6 +63,13 @@ public class BasketItem {
     @ManyToOne(optional = false)
     @JoinColumn(name = "BASKET_ID", referencedColumnName = "BASKET_ID", nullable = false)
     private Basket basket;
+
+    /**
+     * The promotion associated with the item
+     */
+    @OneToOne
+    @JoinColumn(name = "PROMOTION_ID", referencedColumnName = "PROMOTION_ID")
+    private Promotion promotion;
 
     /**
      * Create a new basket item from the given data
