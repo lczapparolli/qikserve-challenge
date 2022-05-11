@@ -1,5 +1,6 @@
 package br.zapparolli.entity;
 
+import br.zapparolli.model.NewPromotion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -50,5 +51,19 @@ public class Promotion {
      */
     @Column(name = "UNIT_DISCOUNT", nullable = false)
     private BigInteger unitDiscount;
+
+    /**
+     * Create a new Promotion with the given data
+     *
+     * @param newPromotion The promotion data
+     * @return Returns the entity created
+     */
+    public static Promotion newPromotion(NewPromotion newPromotion) {
+        return Promotion.builder()
+                .productId(newPromotion.getProductId())
+                .minAmount(newPromotion.getMinAmount())
+                .unitDiscount(newPromotion.getUnitDiscount())
+                .build();
+    }
 
 }
