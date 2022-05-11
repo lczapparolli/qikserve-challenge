@@ -30,8 +30,7 @@ public class BasketService {
     BasketRepository basketRepository;
 
     @Inject
-    @RestClient
-    ProductsRestClient productsRestClient;
+    ProductService productService;
 
     /**
      * Add a new item to a basket, creating it if not exists
@@ -43,7 +42,7 @@ public class BasketService {
     @Transactional
     public Basket addItem(NewBasketItem newBasketItem) {
         validateNewItem(newBasketItem);
-        var product = findProduct(newBasketItem.getProductId());
+        var product = productService.findProduct(newBasketItem.getProductId());
 
         // Checks if the customer have an open basket or creates a new one
         var basket = basketRepository.findOpenBasket(newBasketItem.getCustomerId())
@@ -80,32 +79,6 @@ public class BasketService {
         // Validates the amount
         if (Objects.isNull(newBasketItem.getAmount()) || newBasketItem.getAmount().compareTo(BigInteger.ONE) < 0) {
             throw new BasketException(ErrorMessage.ERROR_INVALID_AMOUNT);
-        }
-    }
-
-    /**
-     * Get the price of the product from the API
-     *
-     * @param productId The product identification
-     * @throws BasketException Throws an exception if there is any error with the API
-     * @return Returns the product data
-     */
-    private Product findProduct(String productId) {
-        try {
-            // Searches the product in the API
-            return productsRestClient.getProduct(productId);
-        } catch (WebApplicationException exception) {
-            // Checks if the product is not found
-            if (exception.getResponse().getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
-                throw new BasketException(ErrorMessage.ERROR_PRODUCT_NOT_FOUND);
-            }
-
-            // Any other exceptions is treat as generic
-            exception.printStackTrace();
-            throw new BasketException(ErrorMessage.ERROR_PRODUCT_API);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            throw new BasketException(ErrorMessage.ERROR_PRODUCT_API);
         }
     }
 

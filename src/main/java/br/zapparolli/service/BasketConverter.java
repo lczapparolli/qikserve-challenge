@@ -4,8 +4,6 @@ import br.zapparolli.entity.Basket;
 import br.zapparolli.entity.BasketItem;
 import br.zapparolli.model.InsertedBasket;
 import br.zapparolli.model.InsertedBasketItem;
-import br.zapparolli.resource.client.ProductsRestClient;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -21,8 +19,7 @@ import java.util.stream.Collectors;
 public class BasketConverter {
 
     @Inject
-    @RestClient
-    ProductsRestClient productsRestClient;
+    ProductService productService;
 
     /**
      * Converts the entity to the response model
@@ -53,7 +50,7 @@ public class BasketConverter {
      */
     private InsertedBasketItem convertBasketItem(BasketItem basketItem) {
         // Get the product data
-        var product = productsRestClient.getProduct(basketItem.getProductId());
+        var product = productService.findProduct(basketItem.getProductId());
 
         // Converts the basket item
         return InsertedBasketItem.builder()

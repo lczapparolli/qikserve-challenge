@@ -46,6 +46,7 @@ public class ProductRestClientMockUtil {
         Mockito.when(productsRestClient.getProduct(PRODUCT_2.getId())).thenReturn(PRODUCT_2);
         // In case of an invalid product
         Mockito.when(productsRestClient.getProduct("INVALID_ID")).thenThrow(new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build()));
+        Mockito.when(productsRestClient.getProduct("API_ERROR")).thenThrow(new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build()));
     }
 
 }
