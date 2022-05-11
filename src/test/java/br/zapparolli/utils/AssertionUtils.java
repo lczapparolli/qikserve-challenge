@@ -1,6 +1,6 @@
 package br.zapparolli.utils;
 
-import br.zapparolli.exception.BasketException;
+import br.zapparolli.exception.QikServeException;
 import br.zapparolli.exception.ErrorMessage;
 import org.junit.jupiter.api.function.Executable;
 
@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class AssertionUtils {
 
     /**
-     * Check if the method throws a {@link BasketException} with the expected message
+     * Check if the method throws a {@link QikServeException} with the expected message
      *
      * @param errorMessage The expect error message
      * @param method The method to be executed
@@ -26,7 +26,7 @@ public class AssertionUtils {
             method.execute();
             // Fails if the method does not throw
             fail("Should have thrown a BasketException");
-        } catch (BasketException exception) {
+        } catch (QikServeException exception) {
             // Checks if the error message is the same
             assertEquals(errorMessage, exception.getErrorMessage());
         } catch (Throwable e) {

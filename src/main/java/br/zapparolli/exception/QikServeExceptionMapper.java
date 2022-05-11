@@ -8,12 +8,12 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 /**
- * Maps a BasketException to an error response
+ * Maps a QikServeException to an error response
  *
  * @author lczapparolli
  */
 @Provider
-public class BasketExceptionMapper implements ExceptionMapper<BasketException> {
+public class QikServeExceptionMapper implements ExceptionMapper<QikServeException> {
 
     /**
      * Converts the exception to a response with error status
@@ -21,7 +21,7 @@ public class BasketExceptionMapper implements ExceptionMapper<BasketException> {
      * @return Returns the response object
      */
     @Override
-    public Response toResponse(BasketException exception) {
+    public Response toResponse(QikServeException exception) {
         return Response.status(exception.getErrorMessage().getStatus())
                 .type(MediaType.APPLICATION_JSON_TYPE)
                 .entity(ErrorResponse.newErrorResponse(exception.getErrorMessage().getMessage()))

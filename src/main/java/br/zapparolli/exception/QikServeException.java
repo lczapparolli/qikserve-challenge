@@ -8,7 +8,7 @@ import lombok.Getter;
  * @author lczapparolli
  */
 @Getter
-public class BasketException extends RuntimeException {
+public class QikServeException extends RuntimeException {
 
     /**
      * Error message that caused the exception
@@ -20,7 +20,7 @@ public class BasketException extends RuntimeException {
      *
      * @param errorMessage Error message that caused the exception
      */
-    public BasketException(ErrorMessage errorMessage) {
+    public QikServeException(ErrorMessage errorMessage) {
         super(errorMessage.getMessage());
         this.errorMessage = errorMessage;
     }

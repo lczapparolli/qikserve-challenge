@@ -1,7 +1,7 @@
 package br.zapparolli.service;
 
-import br.zapparolli.exception.BasketException;
 import br.zapparolli.exception.ErrorMessage;
+import br.zapparolli.exception.QikServeException;
 import br.zapparolli.model.Product;
 import br.zapparolli.resource.client.ProductsRestClient;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -28,7 +28,7 @@ public class ProductService {
      * Get the price of the product from the API
      *
      * @param productId The product identification
-     * @throws BasketException Throws an exception if there is any error with the API
+     * @throws QikServeException Throws an exception if there is any error with the API
      * @return Returns the product data
      */
     public Product findProduct(String productId) {
@@ -38,13 +38,13 @@ public class ProductService {
         } catch (WebApplicationException exception) {
             // Checks if the product is not found
             if (exception.getResponse().getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
-                throw new BasketException(ErrorMessage.ERROR_PRODUCT_NOT_FOUND);
+                throw new QikServeException(ErrorMessage.ERROR_PRODUCT_NOT_FOUND);
             }
 
             // Any other exceptions is treat as generic
-            throw new BasketException(ErrorMessage.ERROR_PRODUCT_API);
+            throw new QikServeException(ErrorMessage.ERROR_PRODUCT_API);
         } catch (Exception exception) {
-            throw new BasketException(ErrorMessage.ERROR_PRODUCT_API);
+            throw new QikServeException(ErrorMessage.ERROR_PRODUCT_API);
         }
     }
 
