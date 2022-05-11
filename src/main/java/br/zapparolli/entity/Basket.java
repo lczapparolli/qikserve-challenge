@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,5 +53,19 @@ public class Basket {
      */
     @OneToMany(mappedBy = "basket", cascade = CascadeType.PERSIST)
     private List<BasketItem> items;
+
+    /**
+     * Create a new basket with the given customer identification
+     *
+     * @param customerId The identification of the customer
+     * @return Returns the created basket
+     */
+    public static Basket newBasket(String customerId) {
+        return Basket.builder()
+                .customerId(customerId)
+                .isOpen(true)
+                .items(new ArrayList<>())
+                .build();
+    }
 
 }

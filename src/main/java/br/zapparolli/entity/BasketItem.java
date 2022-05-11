@@ -1,5 +1,6 @@
 package br.zapparolli.entity;
 
+import br.zapparolli.model.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -62,4 +63,25 @@ public class BasketItem {
     @JoinColumn(name = "BASKET_ID", referencedColumnName = "BASKET_ID", nullable = false)
     private Basket basket;
 
+    /**
+     * Create a new basket item from the given data
+     *
+     * @param basket Basket which the item will be added to
+     * @param product The product related to the item
+     * @return Returns the item created
+     */
+    public static BasketItem newBasketItem(Basket basket, Product product) {
+        // Creates a new item
+        var basketItem = BasketItem.builder()
+                .basket(basket)
+                .productId(product.getId())
+                .unitPrice(product.getPrice())
+                .amount(BigInteger.ZERO) // The amount is initially zero
+                .build();
+
+        // Add the item to the basket
+        basket.getItems().add(basketItem);
+
+        return basketItem;
+    }
 }

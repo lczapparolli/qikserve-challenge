@@ -4,6 +4,8 @@ import br.zapparolli.model.Product;
 import br.zapparolli.resource.client.ProductsRestClient;
 import org.mockito.Mockito;
 
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -42,6 +44,8 @@ public class ProductRestClientMockUtil {
 
         Mockito.when(productsRestClient.getProduct(PRODUCT_1.getId())).thenReturn(PRODUCT_1);
         Mockito.when(productsRestClient.getProduct(PRODUCT_2.getId())).thenReturn(PRODUCT_2);
+        // In case of an invalid product
+        Mockito.when(productsRestClient.getProduct("INVALID_ID")).thenThrow(new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build()));
     }
 
 }
