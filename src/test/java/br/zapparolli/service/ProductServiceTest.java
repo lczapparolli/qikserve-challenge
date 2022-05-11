@@ -1,6 +1,5 @@
 package br.zapparolli.service;
 
-import br.zapparolli.exception.BasketException;
 import br.zapparolli.exception.ErrorMessage;
 import br.zapparolli.mock.ProductRestClientMockUtil;
 import br.zapparolli.resource.client.ProductsRestClient;
@@ -13,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import javax.inject.Inject;
 
 import static br.zapparolli.mock.ProductRestClientMockUtil.PRODUCT_1;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static br.zapparolli.utils.AssertionUtils.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -53,11 +52,7 @@ public class ProductServiceTest {
      */
     @Test
     public void findProductNotFoundTest() {
-        try {
-            productService.findProduct("INVALID_ID");
-        } catch (BasketException exception) {
-            assertEquals(ErrorMessage.ERROR_PRODUCT_NOT_FOUND, exception.getErrorMessage());
-        }
+        assertThrows(ErrorMessage.ERROR_PRODUCT_NOT_FOUND,() -> productService.findProduct("INVALID_ID"));
         verify(productsRestClient, times(1)).getProduct("INVALID_ID");
     }
 
@@ -66,11 +61,7 @@ public class ProductServiceTest {
      */
     @Test
     public void findProductAPIErrorTest() {
-        try {
-            productService.findProduct("API_ERROR");
-        } catch (BasketException exception) {
-            assertEquals(ErrorMessage.ERROR_PRODUCT_API, exception.getErrorMessage());
-        }
+        assertThrows(ErrorMessage.ERROR_PRODUCT_API, () -> productService.findProduct("API_ERROR"));
         verify(productsRestClient, times(1)).getProduct("API_ERROR");
     }
 

@@ -1,6 +1,5 @@
 package br.zapparolli.service;
 
-import br.zapparolli.exception.BasketException;
 import br.zapparolli.exception.ErrorMessage;
 import br.zapparolli.mock.ProductRestClientMockUtil;
 import br.zapparolli.model.NewBasketItem;
@@ -11,18 +10,17 @@ import io.quarkus.test.junit.mockito.InjectMock;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
 import javax.inject.Inject;
 import java.math.BigInteger;
 
 import static br.zapparolli.mock.ProductRestClientMockUtil.PRODUCT_1;
 import static br.zapparolli.mock.ProductRestClientMockUtil.PRODUCT_2;
+import static br.zapparolli.utils.AssertionUtils.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests for the basket service
@@ -232,27 +230,6 @@ public class BasketServiceTest {
     @Test
     public void checkoutNoOpenBasketTest() {
         assertThrows(ErrorMessage.ERROR_NO_OPEN_BASKET, () -> basketService.checkout("NO_OPEN_BASKET"));
-    }
-
-    /**
-     * Check if the method throws a {@link BasketException} with the expected message
-     *
-     * @param errorMessage The expect error message
-     * @param method The method to be executed
-     */
-    private void assertThrows(ErrorMessage errorMessage, Executable method) {
-        try {
-            // Executes the method
-            method.execute();
-            // Fails if the method does not throw
-            fail("Should have thrown a BasketException");
-        } catch (BasketException exception) {
-            // Checks if the error message is the same
-            assertEquals(errorMessage, exception.getErrorMessage());
-        } catch (Throwable e) {
-            // Fails if the exception is different of BasketException
-            fail(String.format("Should have thrown a BasketException, but throwed a '%s'", e.getClass().getName()));
-        }
     }
 
 }
