@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -38,6 +39,22 @@ public class BasketResource {
     public InsertedBasket addItem(NewBasketItem newBasketItem) {
         // Adds the item
         var basket = basketService.addItem(newBasketItem);
+
+        // Converts the entity
+        return basketConverter.convertBasket(basket);
+    }
+
+    /**
+     * Closes an open basket
+     *
+     * @param customerId The identification of the customer
+     * @return Returns the model with the updated data
+     */
+    @POST
+    @Path("/{customerId}/checkout")
+    public InsertedBasket checkout(@PathParam("customerId") String customerId) {
+        // Closes the basket
+        var basket = basketService.checkout(customerId);
 
         // Converts the entity
         return basketConverter.convertBasket(basket);

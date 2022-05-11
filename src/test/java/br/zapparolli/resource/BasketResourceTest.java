@@ -4,6 +4,7 @@ import br.zapparolli.exception.ErrorMessage;
 import br.zapparolli.mock.ProductRestClientMockUtil;
 import br.zapparolli.model.NewBasketItem;
 import br.zapparolli.resource.client.ProductsRestClient;
+import br.zapparolli.service.BasketService;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import io.restassured.config.JsonConfig;
@@ -13,6 +14,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import java.math.BigInteger;
 
@@ -27,6 +29,9 @@ import static org.hamcrest.CoreMatchers.is;
  */
 @QuarkusTest
 public class BasketResourceTest {
+
+    @Inject
+    BasketService basketService;
 
     @InjectMock
     @RestClient
@@ -65,7 +70,6 @@ public class BasketResourceTest {
                 .body("items[0].itemTotal", is(PRODUCT_1.getPrice()));
     }
 
-
     /**
      * Check the return in case of an error
      */
@@ -85,6 +89,51 @@ public class BasketResourceTest {
             .then()
                 .statusCode(404)
                 .body("message", is(ErrorMessage.ERROR_PRODUCT_NOT_FOUND.getMessage()));
+    }
+
+    /**
+     * Check the checkout process
+     */
+    @Test
+    public void checkoutTest() {
+        // Creates a new basket
+        var newBasketItem = NewBasketItem.builder()
+                .customerId("RESOURCE_CHECKOUT_TEST")
+                .amount(BigInteger.ONE)
+                .productId(PRODUCT_1.getId())
+                .build();
+        basketService.addItem(newBasketItem);
+
+        // Closes the basket
+        given()
+            .when()
+                .config(RestAssuredConfig.newConfig().jsonConfig(JsonConfig.jsonConfig().numberReturnType(JsonPathConfig.NumberReturnType.BIG_INTEGER)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .post("/basket/RESOURCE_CHECKOUT_TEST/checkout")
+            .then()
+                .statusCode(200)
+                .body("customerId", is(newBasketItem.getCustomerId()))
+                .body("total", is(PRODUCT_1.getPrice()))
+                .body("items[0].productId", is(PRODUCT_1.getId()))
+                .body("items[0].productName", is(PRODUCT_1.getName()))
+                .body("items[0].unitPrice", is(PRODUCT_1.getPrice()))
+                .body("items[0].amount", is(newBasketItem.getAmount()))
+                .body("items[0].itemTotal", is(PRODUCT_1.getPrice()));
+    }
+
+
+    /**
+     * Check the return in case of an error
+     */
+    @Test
+    public void checkoutErrorTest() {
+        given()
+            .when()
+                .contentType(MediaType.APPLICATION_JSON)
+            .post("/basket/NO_OPEN_BASKET/checkout")
+                .then()
+                .statusCode(404)
+                .body("message", is(ErrorMessage.ERROR_NO_OPEN_BASKET.getMessage()));
     }
 
 }
